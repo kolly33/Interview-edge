@@ -37,7 +37,8 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
       domain:configService.get<string>('AUTH0_DOMAIN'), // e.g., 'your-domain.auth0.com'
       clientID: configService.get<string>('CLIENT_ID'),
       clientSecret:configService.get<string>('AUTH0_CLIENT_SECRET'),
-      callbackURL: configService.get<string>('AUTH0_CALLBACK_URL'), // e.g., 'http://localhost:3000/auth/callback'
+      callbackURL: configService.get<string>('AUTH0_CALLBACK_URL'),
+      state: false,
     });
   }
 
