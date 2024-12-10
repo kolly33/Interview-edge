@@ -36,9 +36,12 @@
 
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   // Redirect users to Auth0 for login
   @Get('login')
   @UseGuards(AuthGuard('auth0'))
@@ -66,3 +69,4 @@ export class AuthController {
     };
   }
 }
+ 

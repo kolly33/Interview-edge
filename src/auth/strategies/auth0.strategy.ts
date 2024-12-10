@@ -34,7 +34,7 @@ import { ConfigService } from '@nestjs/config';
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   constructor(private configService: ConfigService) {
     super({
-      domain:configService.get<string>('AUTH0_DOMAIN'), // e.g., 'your-domain.auth0.com'
+      domain:configService.get<string>('AUTH0_DOMAIN'), 
       clientID: configService.get<string>('CLIENT_ID'),
       clientSecret:configService.get<string>('AUTH0_CLIENT_SECRET'),
       callbackURL: configService.get<string>('AUTH0_CALLBACK_URL'),
