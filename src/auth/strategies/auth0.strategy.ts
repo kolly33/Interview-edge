@@ -21,30 +21,30 @@
 //   }
 // }
 
-
-
-
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-auth0';
 import { ConfigService } from '@nestjs/config';
 
-
 @Injectable()
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   constructor(private configService: ConfigService) {
     super({
-      domain:configService.get<string>('AUTH0_DOMAIN'), 
+      domain: configService.get<string>('AUTH0_DOMAIN'),
       clientID: configService.get<string>('CLIENT_ID'),
-      clientSecret:configService.get<string>('AUTH0_CLIENT_SECRET'),
+      clientSecret: configService.get<string>('AUTH0_CLIENT_SECRET'),
       callbackURL: configService.get<string>('AUTH0_CALLBACK_URL'),
       state: false,
     });
   }
 
-  validate(accessToken: string, refreshToken: string, extraParams: any, profile: any) {
+  validate(
+    accessToken: string,
+    refreshToken: string,
+    extraParams: any,
+    profile: any,
+  ) {
     // Optionally process user profile here
     return profile;
   }
 }
-
