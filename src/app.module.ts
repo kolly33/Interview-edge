@@ -8,6 +8,7 @@ import { ResumeModule } from './resume/resume.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { databaseConfig } from './database/database.config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { InterviewModule } from './interview/interview.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AuthModule,
     ProtectedModule,
     ResumeModule,
+    InterviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
