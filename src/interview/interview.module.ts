@@ -4,10 +4,11 @@ import { InterviewController } from './interview.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Interview } from './entities/interview.entity';
 import { SessionRepository } from 'src/session/session.repository';
+import { TranscriptService } from 'src/transcript/transcript.service';
 
 @Module({
   imports: [SequelizeModule.forFeature([Interview])],
   controllers: [InterviewController],
-  providers: [InterviewService, SessionRepository],
+  providers: [InterviewService, SessionRepository, TranscriptService],
 })
 export class InterviewModule {}

@@ -1,5 +1,15 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseInterceptors,
+  BadRequestException,
+  UploadedFile,
+} from '@nestjs/common';
 import { InterviewService } from './interview.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('interview')
 export class InterviewController {
@@ -14,11 +24,30 @@ export class InterviewController {
   }
 
   @Post('transcribe')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 1024 * 1024 * 10 },
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.startsWith('audio/')) {
+          return callback(
+            new BadRequestException(
+              'Invalid file type, only audio file is accepted',
+            ),
+            false,
+          );
+        }
+        return callback(null, true);
+      },
+    }),
+  )
   async transcribe(
     @Body('sessionId') sessionId: string,
-    @Body('transcript') transcript: string,
-  ): Promise<void> {
-    await this.interviewService.addTranscript(sessionId, transcript);
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<string> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+    return await this.interviewService.transcriptAudio(sessionId, file.buffer);
   }
 
   @Post('response')

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { SessionRepository } from '../session/session.repository';
 import { Interview } from './entities/interview.entity';
+import { TranscriptService } from 'src/transcript/transcript.service';
 
 @Injectable()
 export class InterviewService {
-  constructor(private readonly sessionRepository: SessionRepository) {}
+  constructor(
+    private readonly sessionRepository: SessionRepository,
+    private readonly transcriptService: TranscriptService,
+  ) {}
 
   // Start a new session
   async startSession(user_id: string): Promise<string> {
@@ -13,19 +17,18 @@ export class InterviewService {
   }
 
   // Add transcript data
-  async addTranscript(
+  async transcriptAudio(
     session_id: string,
-    transcriptData: string,
-  ): Promise<void> {
+    transcriptData: Buffer,
+  ): Promise<string> {
     const session = await this.sessionRepository.findBySessionId(session_id);
     if (!session) throw new Error('Session not found');
-    const updatedTranscript = JSON.stringify([
-      ...(JSON.parse(session.transcript || '[]') as string[]),
-      transcriptData,
-    ]);
+    const updatedTranscript =
+      await this.transcriptService.transcribeAudio(transcriptData);
     await this.sessionRepository.updateSessionData(session_id, {
       transcript: updatedTranscript,
     });
+    return updatedTranscript;
   }
 
   // Add AI suggestions
