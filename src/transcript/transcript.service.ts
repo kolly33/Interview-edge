@@ -1,23 +1,22 @@
-import { Injectable } from "@nestjs/common";
-import { SpeechClient } from "@google-cloud/speech";
+import { Injectable } from '@nestjs/common';
+import OpenAI from 'openai';
+import Configuration from 'openai';
 
 @Injectable()
 export class TranscriptService {
-  constructor(private readonly speechClient: SpeechClient) {}
-
+  constructor(
+    private readonly openAI: OpenAI,
+    private readonly configuration: Configuration,
+  ) {}
 
   async transcribeAudio(audio: Buffer): Promise<string> {
-    const [response] = await this.speechClient.recognize({
-      audio: {
-        content: audio.toString('base64'),
-      },
-      config: {
-        encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
-        languageCode: 'en-US',
-      },
+    const file = new File([audio], 'audio.wav', { type: 'audio/wav' });
+    const transcription = await this.openAI.audio.transcriptions.create({
+      file: file,
+      model: 'whisper-1',
     });
-    const transcription = response.results.map((result) => result.alternatives[0].transcript).join(' ');
-    return transcription || "No transcription Available";
+
+    const text = transcription.text;
+    return text;
+  }
 }
-  
