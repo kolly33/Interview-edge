@@ -16,14 +16,22 @@ export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post()
-  create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
-    return this.subscriptionService.create(createSubscriptionDto);
+  async create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
+    const subscription = await this.subscriptionService.create(
+      createSubscriptionDto,
+    );
+    return {
+      success: true,
+      message: 'Subscription created successfully',
+      data: subscription,
+    };
   }
 
   @Get()
   async findAll() {
     const subscriptions = await this.subscriptionService.findAll();
     return {
+      success: true,
       message: 'Subscriptions fetched successfully',
       data: subscriptions,
     };

@@ -10,6 +10,7 @@ import { databaseConfig } from './database/database.config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PaymentModule } from './payment/payment.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { PlansModule } from './plans/plans.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     ResumeModule,
     PaymentModule,
     SubscriptionModule,
+    PlansModule,
   ],
   controllers: [AppController],
   providers: [AppService],

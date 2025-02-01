@@ -34,7 +34,7 @@ export class Subscription extends Model<Subscription> {
 
   @Default('active')
   @Column
-  status: string;
+  status: 'active' | 'inactive';
 
   @CreatedAt
   created_at: Date;
