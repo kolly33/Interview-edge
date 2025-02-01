@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Payment } from './entities/payment.entity';
 import { StripeService } from './stripe.service';
+import { PlansService } from 'src/plans/plans.service';
 
 @Injectable()
 export class PaymentService {
@@ -9,28 +10,28 @@ export class PaymentService {
     @InjectModel(Payment)
     private paymentModel: typeof Payment,
     private stripe: StripeService,
+    private planService: PlansService,
   ) {}
 
-  async initiatePayment(user_id: string, amount: number, email: string) {
+  async initiatePayment(user_id: string, email: string, plan_id: string) {
     try {
-      const response = await this.stripe.paymentIntent(amount, email);
-      // console.log('Response from payment intent', response);
-      // const payment_intent_id: response.id;
-      // console.log('Payment intent id is ', payment_intent_id);
+      const plan = await this.planService.findOne(plan_id);
+      const response = await this.stripe.paymentIntent(plan.price, email);
+
       const payment = await this.paymentModel.create({
         payment_intent_id: response.id as string,
         user_id,
-        amount,
+        amount: plan.price,
       });
-      console.log('Payment object', payment);
+      // console.log('Payment object', payment);
       // console.log('Response from payment intent', response);
       return payment;
     } catch (error) {
       console.log('Error from payment intent', error);
       throw new BadRequestException(error.message);
     }
-    // Logic to charge the customer
   }
+
   async handlePayment(paymentIntendId: string) {
     try {
       const response = await this.stripe.confirmPaymentIntent(paymentIntendId);
@@ -46,10 +47,15 @@ export class PaymentService {
     return { user_id, subscription_id };
   }
 
+  async getPayments() {
+    const payments = await this.paymentModel.findAll();
+    return payments;
+  }
+
   async handleWebhook(payload: any, sig: any) {
     const event = await this.stripe.handleWebhook(payload, sig);
-    console.log('event type', event.type);
-    console.log('Event object is ', event.data.object);
+    // console.log('event type', event.type);
+    // console.log('Event object is ', event.data.object);
 
     switch (event.type) {
       case 'payment_intent.created':

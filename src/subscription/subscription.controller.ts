@@ -6,10 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 
 @Controller('subscriptions')
 export class SubscriptionController {
@@ -17,8 +18,10 @@ export class SubscriptionController {
 
   @Post()
   async create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
+    const user_id = '12345';
     const subscription = await this.subscriptionService.create(
-      createSubscriptionDto,
+      user_id,
+      createSubscriptionDto.plan_id,
     );
     return {
       success: true,
@@ -64,6 +67,7 @@ export class SubscriptionController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: string) {
     return this.subscriptionService.remove(id);
   }

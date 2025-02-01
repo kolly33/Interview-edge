@@ -12,26 +12,6 @@ export class StripeService {
     });
   }
 
-  async chargeCustomer(amount: number, email: string, token: string) {
-    try {
-      const customer = await this.stripe.customers.create({
-        email,
-        source: token,
-      });
-
-      const charge = await this.stripe.charges.create({
-        amount,
-        description: 'Sample Charge',
-        currency: '',
-        customer: customer.id,
-      });
-
-      return charge;
-    } catch (error) {
-      throw new Error(`Stripe charge failed: ${error.message}`);
-    }
-  }
-
   async paymentIntent(amount: number, email: string) {
     try {
       const paymentIntent = await this.stripe.paymentIntents.create({

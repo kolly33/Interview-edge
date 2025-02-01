@@ -7,6 +7,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
 
 @Table
@@ -38,4 +39,7 @@ export class Subscription extends Model<Subscription> {
 
   @CreatedAt
   created_at: Date;
+
+  @UpdatedAt
+  updated_at: Date;
 }
