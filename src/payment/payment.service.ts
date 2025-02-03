@@ -1,17 +1,27 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Payment } from './entities/payment.entity';
 import { StripeService } from './stripe.service';
 import { PlansService } from 'src/plans/plans.service';
+import { SubscriptionService } from 'src/subscription/subscription.service';
 
 @Injectable()
 export class PaymentService {
   constructor(
     @InjectModel(Payment)
     private paymentModel: typeof Payment,
+    @Inject(forwardRef(() => SubscriptionService))
+    private subscriptionService: SubscriptionService,
     private stripe: StripeService,
     private planService: PlansService,
-  ) {}
+  ) {
+    console.log(paymentModel);
+  }
 
   async initiatePayment(user_id: string, email: string, plan_id: string) {
     try {
@@ -20,7 +30,7 @@ export class PaymentService {
       const pendingPayment = await this.paymentModel.findOne({
         where: {
           user_id,
-          amount: plan.price,
+          plan_id,
           status: 'pending',
         },
       });
@@ -35,6 +45,7 @@ export class PaymentService {
         payment_intent_id: response.id as string,
         user_id,
         amount: plan.price,
+        plan_id,
       });
       // console.log('Payment object', payment);
       // console.log('Response from payment intent', response);
@@ -66,6 +77,27 @@ export class PaymentService {
     return { user_id, subscription_id };
   }
 
+  async updatePaymentStatus(payment_id: string, status: string) {
+    const payment = await this.paymentModel.findOne({
+      where: { payment_intent_id: payment_id },
+    });
+    if (!payment) {
+      throw new BadRequestException('Payment not found');
+    }
+
+    payment.status = status;
+    await payment.save();
+
+    if (status === 'succeeded') {
+      await this.subscriptionService.activateSubscription(
+        payment.user_id,
+        payment.plan_id,
+      );
+    }
+
+    return payment;
+  }
+
   async getPayments() {
     const payments = await this.paymentModel.findAll();
     return payments;
@@ -74,7 +106,7 @@ export class PaymentService {
   async handleWebhook(payload: any, sig: any) {
     const event = await this.stripe.handleWebhook(payload, sig);
     // console.log('event type', event.type);
-    // console.log('Event object is ', event.data.object);
+    console.log('Event object is ', event.data.object);
 
     switch (event.type) {
       case 'payment_intent.created':
@@ -84,15 +116,22 @@ export class PaymentService {
         break;
       case 'payment_intent.processing':
         const paymentIntentProcessing = event.data.object;
-        console.log('PaymentIntent is processing!', paymentIntentProcessing);
+        this.updatePaymentStatus(
+          paymentIntentProcessing.id,
+          paymentIntentProcessing.status,
+        );
         break;
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-        console.log('PaymentIntent was successful!', paymentIntent);
+        this.updatePaymentStatus(paymentIntent.id, paymentIntent.status);
         break;
       case 'payment_intent.payment_failed':
         const paymentIntentPaymentFailed = event.data.object;
-        console.log('PaymentIntent has failed', paymentIntentPaymentFailed);
+        this.updatePaymentStatus(
+          paymentIntentPaymentFailed.id,
+          paymentIntentPaymentFailed.status,
+        );
+
         break;
       // ... handle other event types
       default:

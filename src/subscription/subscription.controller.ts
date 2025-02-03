@@ -18,7 +18,7 @@ export class SubscriptionController {
   @Post('subscribe')
   @HttpCode(200)
   async create(@Body('plan_id') plan_id: string) {
-    const user_id = '12345'; // Retrieve from user
+    const user_id = '123450'; // Retrieve from user
     const email = 'olajosh94@gmail.com'; // Retrieve from user
     const subscription = await this.subscriptionService.subscribe(
       user_id,

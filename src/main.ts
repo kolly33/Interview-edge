@@ -14,7 +14,7 @@ async function bootstrap() {
     }),
   );
   app.use(
-    '/payment/webhook',
+    '/payments/webhook',
     bodyParser.raw({ type: 'application/json' }), // Stripe requires raw body
   );
 

@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription)
     private subscriptionModel: typeof Subscription,
+    @Inject(forwardRef(() => PaymentService))
     private paymentService: PaymentService,
     private planService: PlansService,
   ) {}
@@ -62,15 +65,19 @@ export class SubscriptionService {
     return subscription;
   }
 
-  private async activateSubscription(subscription: Subscription) {
-    const plan = await this.planService.findOne(subscription.plan_id);
-    subscription.start_date = new Date();
-    subscription.end_date.setDate(
-      subscription.start_date.getDate() + plan.duration_in_days,
-    );
-    await subscription.update({ status: 'active' });
-
-    await subscription.save();
+  async activateSubscription(user_id: string, plan_id: string) {
+    const plan = await this.planService.findOne(plan_id);
+    const start_date = new Date();
+    const end_date = new Date(start_date);
+    end_date.setDate(start_date.getDate() + plan.duration_in_days);
+    const subscription = await this.subscriptionModel.create({
+      user_id,
+      plan_id,
+      start_date,
+      end_date,
+      status: 'active',
+    });
+    return subscription;
   }
 
   findAll() {

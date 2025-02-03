@@ -26,6 +26,10 @@ export class Payment extends Model {
   user_id: string;
 
   @AllowNull(false)
+  @Column
+  plan_id: string;
+
+  @AllowNull(false)
   @Column('decimal')
   amount: number;
 
