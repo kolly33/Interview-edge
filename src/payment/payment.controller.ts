@@ -15,31 +15,18 @@ import { PaymentIntentDto } from './dto/payment-intent.dto';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  // Logic to charge the customer
-  @Post('charge')
-  @HttpCode(200)
-  async chargeCustomer() {
-    const user_id = '12345';
-    const plan_id = 'f205fcde-9f03-4cae-aa66-76a81414ae64';
-    return this.paymentService.initiatePayment(
-      user_id,
-      'olajosh94@gmail.com',
-      plan_id,
-    );
-  }
-
-  // Logic to handle subscription payment
-  // @Post('subscribe')
-  // async subscribe() {
-  //   return this.paymentService.subscribe();
-  // }
-
-  // Logic to handle payment intent
-  // Crypto payment
-  @Post('crypto')
+  // Logic to confirm payment
+  @Post('confirm')
   @HttpCode(200)
   async paymentIntent(@Body() paymentDto: PaymentIntentDto) {
-    return this.paymentService.handlePayment(paymentDto.paymentIntent);
+    const paymentResponse = await this.paymentService.handlePayment(
+      paymentDto.paymentIntent,
+    );
+    return {
+      success: true,
+      message: 'Payment confirmed successfully',
+      data: paymentResponse,
+    };
   }
 
   @Post('webhook')
@@ -50,7 +37,7 @@ export class PaymentController {
     res.send({ received: response });
   }
 
-  // ENdpoint to check all payments and subscription status
+  // Endpoint to check all payments and subscription status
   @Get('')
   async getPayments() {
     const payments = await this.paymentService.getPayments();

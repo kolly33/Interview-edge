@@ -16,6 +16,19 @@ export class PaymentService {
   async initiatePayment(user_id: string, email: string, plan_id: string) {
     try {
       const plan = await this.planService.findOne(plan_id);
+      // Check if user has a pending payment for the same plan
+      const pendingPayment = await this.paymentModel.findOne({
+        where: {
+          user_id,
+          amount: plan.price,
+          status: 'pending',
+        },
+      });
+
+      if (pendingPayment) {
+        return pendingPayment;
+      }
+
       const response = await this.stripe.paymentIntent(plan.price, email);
 
       const payment = await this.paymentModel.create({
@@ -35,7 +48,13 @@ export class PaymentService {
   async handlePayment(paymentIntendId: string) {
     try {
       const response = await this.stripe.confirmPaymentIntent(paymentIntendId);
-      return response;
+
+      const responseData = {
+        status: response.status,
+        amount: response.amount,
+        currency: response.currency,
+      };
+      return responseData;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

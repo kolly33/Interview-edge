@@ -11,5 +11,6 @@ import { PlansService } from 'src/plans/plans.service';
   imports: [SequelizeModule.forFeature([Payment]), PlansModule],
   controllers: [PaymentController],
   providers: [PaymentService, StripeService, PlansService],
+  exports: [PaymentService],
 })
 export class PaymentModule {}

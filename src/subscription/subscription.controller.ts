@@ -10,22 +10,24 @@ import {
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 
 @Controller('subscriptions')
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
-  @Post()
-  async create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
-    const user_id = '12345';
-    const subscription = await this.subscriptionService.create(
+  @Post('subscribe')
+  @HttpCode(200)
+  async create(@Body('plan_id') plan_id: string) {
+    const user_id = '12345'; // Retrieve from user
+    const email = 'olajosh94@gmail.com'; // Retrieve from user
+    const subscription = await this.subscriptionService.subscribe(
       user_id,
-      createSubscriptionDto.plan_id,
+      email,
+      plan_id,
     );
     return {
       success: true,
-      message: 'Subscription created successfully',
+      message: 'Subscription payment initiated successfully',
       data: subscription,
     };
   }
