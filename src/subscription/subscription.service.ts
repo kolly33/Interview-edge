@@ -43,10 +43,6 @@ export class SubscriptionService {
       email,
       plan_id,
     );
-    await this.subscriptionModel.create({
-      user_id,
-      plan_id,
-    });
 
     return payment;
   }
@@ -77,6 +73,20 @@ export class SubscriptionService {
       end_date,
       status: 'active',
     });
+    return subscription;
+  }
+
+  async findUserSubscription(user_id: string) {
+    const subscription = await this.subscriptionModel.findOne({
+      where: {
+        user_id,
+        // status: 'active',
+        // end_date: {
+        //   $gte: new Date(),
+        // },
+      },
+    });
+    console.log('Subscription', subscription);
     return subscription;
   }
 

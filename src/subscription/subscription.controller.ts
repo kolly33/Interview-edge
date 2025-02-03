@@ -32,6 +32,20 @@ export class SubscriptionController {
     };
   }
 
+  @Get('me')
+  async findUserSubscription() {
+    const user_id = '123450'; // Retrieve from user
+    const subscription =
+      await this.subscriptionService.findUserSubscription(user_id);
+    return {
+      success: true,
+      message: 'User subscription fetched successfully',
+      data: subscription
+        ? subscription
+        : 'User does not have any active subscription',
+    };
+  }
+
   @Get()
   async findAll() {
     const subscriptions = await this.subscriptionService.findAll();
