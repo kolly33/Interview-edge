@@ -25,15 +25,15 @@ export class Subscription extends Model<Subscription> {
   @Column
   plan_id: string;
 
-  @AllowNull(false)
+  @Default(new Date())
   @Column
   start_date: Date;
 
-  @AllowNull(false)
+  @Default(new Date())
   @Column
   end_date: Date;
 
-  @Default('active')
+  @Default('inactive')
   @Column
   status: 'active' | 'inactive';
 

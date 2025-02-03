@@ -35,12 +35,17 @@ export class SubscriptionService {
       throw new BadRequestException('User already has an active subscription');
     }
 
-    const payment_intent = await this.paymentService.initiatePayment(
+    const payment = await this.paymentService.initiatePayment(
       user_id,
       email,
       plan_id,
     );
-    return payment_intent;
+    await this.subscriptionModel.create({
+      user_id,
+      plan_id,
+    });
+
+    return payment;
   }
 
   async create(user_id: string, plan_id: string) {
@@ -55,6 +60,17 @@ export class SubscriptionService {
       end_date,
     });
     return subscription;
+  }
+
+  private async activateSubscription(subscription: Subscription) {
+    const plan = await this.planService.findOne(subscription.plan_id);
+    subscription.start_date = new Date();
+    subscription.end_date.setDate(
+      subscription.start_date.getDate() + plan.duration_in_days,
+    );
+    await subscription.update({ status: 'active' });
+
+    await subscription.save();
   }
 
   findAll() {
