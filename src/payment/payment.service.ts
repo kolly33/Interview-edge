@@ -19,9 +19,7 @@ export class PaymentService {
     private subscriptionService: SubscriptionService,
     private stripe: StripeService,
     private planService: PlansService,
-  ) {
-    console.log(paymentModel);
-  }
+  ) {}
 
   async initiatePayment(user_id: string, email: string, plan_id: string) {
     try {
@@ -51,7 +49,7 @@ export class PaymentService {
       // console.log('Response from payment intent', response);
       return payment;
     } catch (error) {
-      console.log('Error from payment intent', error);
+      // console.log('Error from payment intent', error);
       throw new BadRequestException(error.message);
     }
   }
@@ -106,14 +104,8 @@ export class PaymentService {
   async handleWebhook(payload: any, sig: any) {
     const event = await this.stripe.handleWebhook(payload, sig);
     // console.log('event type', event.type);
-    console.log('Event object is ', event.data.object);
 
     switch (event.type) {
-      case 'payment_intent.created':
-        const paymentIntentCreated = event.data.object;
-
-        console.log('PaymentIntent was created!', paymentIntentCreated);
-        break;
       case 'payment_intent.processing':
         const paymentIntentProcessing = event.data.object;
         this.updatePaymentStatus(
