@@ -30,10 +30,10 @@ import { ConfigService } from '@nestjs/config';
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   constructor(private configService: ConfigService) {
     super({
-      domain: configService.get<string>('AUTH0_DOMAIN'),
-      clientID: configService.get<string>('CLIENT_ID'),
-      clientSecret: configService.get<string>('AUTH0_CLIENT_SECRET'),
-      callbackURL: configService.get<string>('AUTH0_CALLBACK_URL'),
+      domain: configService.get<string>('AUTH0_DOMAIN', 'dev-zeo4pk45kd8bncwi.uk.auth0.com'),
+      clientID: configService.get<string>('CLIENT_ID', 'IF8BSruxBjlepkrjxQ6hLeCq5EQoBft9'),
+      clientSecret: configService.get<string>('AUTH0_CLIENT_SECRET','y0KDO-mdFSHkcknkkXeE6ROiQ-bqLPiok8UipHuzK3msYLwBokhmVbNbAfva0LoH' ),
+      callbackURL: configService.get<string>('AUTH0_CALLBACK_URL', 'http://localhost:3000/auth/callback'),
       state: false,
     });
   }
