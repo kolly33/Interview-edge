@@ -27,6 +27,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/sequelize": "^10.0.1",
+    "@types/stripe": "^8.0.417",
     "auth0": "^4.14.0",
     "auth0-node": "^10.0.0",
     "class-transformer": "^0.5.1",
@@ -42,7 +43,7 @@
     "rxjs": "^7.8.1",
     "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6",
-    "stripe": "^17.4.0"
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

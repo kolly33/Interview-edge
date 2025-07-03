@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as AssemblyAI from 'assembly-ai';
+import AssemblyAI from 'assemblyai';
 
 @Injectable()
 export class TranscriptionService {

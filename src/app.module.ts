@@ -11,6 +11,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { InterviewModule } from './interview/interview.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { PaymentModule } from './payment/payment.module';
+import { CodingModule } from './coding/coding.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PaymentModule } from './payment/payment.module';
     InterviewModule,
     WebsocketModule,
     PaymentModule,
+    CodingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
