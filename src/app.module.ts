@@ -10,6 +10,7 @@ import { databaseConfig } from './database/database.config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { InterviewModule } from './interview/interview.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     ResumeModule,
     InterviewModule,
     WebsocketModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
